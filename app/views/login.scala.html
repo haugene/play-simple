@@ -16,8 +16,8 @@
                 @flash.get("success")
                 </p>
             }
-                <input type="text" class="input-block-level" name="username" placeholder="Username" value="@form("username").value">
-                <input type="password" class="input-block-level" name="password" placeholder="Password">
+                <input type="text" class="input-block-level" name="username" placeholder="Username" value="@form("username").value" required="">
+                <input type="password" class="input-block-level" name="password" placeholder="Password" required="">
                 <button class="btn btn-large btn-primary" type="submit">Sign in</button>
         }
 
