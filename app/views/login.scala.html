@@ -1,14 +1,25 @@
+@(form: play.data.Form[Application.Login])
 @main("Login"){
 <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/login.css")">
 } {
     <div class="container">
 
-        <form class="form-signin">
+        @helper.form(action = routes.Application.authenticate, 'class -> "form-signin") {
             <h2 class="form-signin-heading">Please sign in</h2>
-            <input type="text" class="input-block-level" placeholder="Email address">
-            <input type="password" class="input-block-level" placeholder="Password">
-            <button class="btn btn-large btn-primary" type="submit">Sign in</button>
-        </form>
+            @if(form.hasGlobalErrors) {
+                <p class="error">
+                    @form.globalError.message
+                </p>
+            }
+            @if(flash.contains("success")) {
+                <p class="success">
+                @flash.get("success")
+                </p>
+            }
+                <input type="text" class="input-block-level" name="username" placeholder="Username" value="@form("username").value">
+                <input type="password" class="input-block-level" name="password" placeholder="Password">
+                <button class="btn btn-large btn-primary" type="submit">Sign in</button>
+        }
 
     </div> <!-- /container -->
 }

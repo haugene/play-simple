@@ -1,0 +1,9 @@
+
+# Users
+
+users:
+
+    - !!models.User
+        username: user
+        name: Mr User
+        password: password
