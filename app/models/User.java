@@ -1,8 +1,11 @@
 package models;
 
+import org.apache.commons.lang3.StringUtils;
+import play.Logger;
 import play.data.format.Formats;
 import play.data.validation.Constraints;
 import play.db.ebean.Model;
+import utils.PasswordHelper;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -22,7 +25,21 @@ public class User extends Model {
     public String name;
 
     @Constraints.Required
-    public String password;
+    public String passwordHash;
+
+    // Store a salt value for security reasons
+    private String passwordSalt;
+
+    /**
+     * Default constructor
+     */
+    public User()
+    {
+        if(StringUtils.isBlank(passwordSalt))
+        {
+            passwordSalt = PasswordHelper.nextSalt();
+        }
+    }
 
     // -- Queries
 
@@ -46,10 +63,32 @@ public class User extends Model {
      * Authenticate a User.
      */
     public static User authenticate(String username, String password) {
-        return find.where()
-                .eq("username", username)
-                .eq("password", password)
-                .findUnique();
+
+        User user = findByUsername(username);
+        if(user == null)
+        {
+            // No user found with that username
+            Logger.error("No user found for username" + username);
+            return null;
+        }
+
+        // Hash the salt and given password
+        String passwordHash = PasswordHelper.hash(user.passwordSalt + password);
+
+        // Check if the hash is the same as we have stored
+        if(passwordHash.equals(user.passwordHash))
+        {
+            return user;
+        }
+
+        return null;
+    }
+
+    public void setPassword(String password)
+    {
+        Logger.info("Setting password for user: " + username);
+        passwordSalt = String.valueOf(PasswordHelper.nextSalt());
+        passwordHash = PasswordHelper.hash(passwordSalt + password);
     }
 
     // --
